@@ -61,7 +61,7 @@ namespace pcl_ros
       childInit (ros::NodeHandle &nh)
       {
         // Create the output publisher
-        pub_output_ = nh.advertise<PointCloudOut> ("output", max_queue_size_);
+        pub_output_ = nh.advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
         return (true);
       }
 

@@ -41,6 +41,7 @@
 #include "pcl_ros/segmentation/extract_clusters.h"
 
 #include <pcl_conversions/pcl_conversions.h>
+#include <sensor_msgs/PointCloud2.h>
 
 using pcl_conversions::fromPCL;
 using pcl_conversions::moveFromPCL;
@@ -73,7 +74,7 @@ pcl_ros::EuclideanClusterExtraction::onInit ()
   if (publish_indices_)
     pub_output_ = pnh_->advertise<PointIndices> ("output", max_queue_size_);
   else
-    pub_output_ = pnh_->advertise<PointCloud> ("output", max_queue_size_);
+    pub_output_ = pnh_->advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
 
   // Enable the dynamic reconfigure service
   srv_ = boost::make_shared <dynamic_reconfigure::Server<EuclideanClusterExtractionConfig> > (*pnh_);
@@ -199,7 +200,7 @@ pcl_ros::EuclideanClusterExtraction::input_indices_callback (
       pcl_msgs::PointIndices ros_pi;
       moveFromPCL(clusters[i], ros_pi);
       ros_pi.header.stamp += ros::Duration (i * 0.001);
-      pub_output_.publish (ros_pi);
+      pub_output_.publish2(ros_pi);
     }
 
     NODELET_DEBUG ("[segmentAndPublish] Published %zu clusters (PointIndices) on topic %s", clusters.size (), pnh_->resolveName ("output").c_str ());
@@ -220,7 +221,9 @@ pcl_ros::EuclideanClusterExtraction::input_indices_callback (
       header.stamp += ros::Duration (i * 0.001);
       toPCL(header, output.header);
       // Publish a Boost shared ptr const data
-      pub_output_.publish (output.makeShared ());
+      sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+      pcl::toROSMsg(output, *output_msg);
+      pub_output_.publish2(output_msg);
       NODELET_DEBUG ("[segmentAndPublish] Published cluster %zu (with %zu values and stamp %f) on topic %s",
                      i, clusters[i].indices.size (), header.stamp.toSec (), pnh_->resolveName ("output").c_str ());
     }

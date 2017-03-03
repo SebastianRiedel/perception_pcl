@@ -45,7 +45,9 @@ pcl_ros::NormalEstimationTBB::emptyPublish (const PointCloudInConstPtr &cloud)
 {
   PointCloud output;
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
 }
 
 void 
@@ -71,7 +73,9 @@ pcl_ros::NormalEstimationTBB::computePublish (const PointCloudInConstPtr &cloud,
   // Publish a Boost shared ptr const data
   // Enforce that the TF frame and the timestamp are copied
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
 }
 
 typedef pcl_ros::NormalEstimationTBB NormalEstimationTBB;

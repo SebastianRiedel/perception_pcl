@@ -39,13 +39,15 @@
 #include <pcl/common/io.h>
 #include "pcl_ros/surface/convex_hull.h"
 #include <geometry_msgs/PolygonStamped.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <sensor_msgs/PointCloud2.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl_ros::ConvexHull2D::onInit ()
 {
   ros::NodeHandle pnh = getMTPrivateNodeHandle ();
-  pub_output_ = pnh.advertise<PointCloud> ("output", max_queue_size_);
+  pub_output_ = pnh.advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
   pub_plane_  = pnh.advertise<geometry_msgs::PolygonStamped>("output_polygon", max_queue_size_);
 
   // ---[ Optional parameters
@@ -101,7 +103,9 @@ void
     NODELET_ERROR ("[%s::input_indices_callback] Invalid input!", getName ().c_str ());
     // Publish an empty message
     output.header = cloud->header;
-    pub_output_.publish (output.makeShared ());
+    sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(output, *output_msg);
+    pub_output_.publish2(output_msg);
     return;
   }
   // If indices are given, check if they are valid
@@ -110,7 +114,9 @@ void
     NODELET_ERROR ("[%s::input_indices_callback] Invalid indices!", getName ().c_str ());
     // Publish an empty message
     output.header = cloud->header;
-    pub_output_.publish (output.makeShared ());
+    sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(output, *output_msg);
+    pub_output_.publish2(output_msg);
     return;
   }
 
@@ -174,7 +180,9 @@ void
   }
   // Publish a Boost shared ptr const data
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
 }
 
 typedef pcl_ros::ConvexHull2D ConvexHull2D;

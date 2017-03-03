@@ -38,6 +38,7 @@
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/surface/moving_least_squares.h"
 #include <pcl/io/io.h>
+#include <sensor_msgs/PointCloud2.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl_ros::MovingLeastSquares::onInit ()
@@ -45,8 +46,8 @@ pcl_ros::MovingLeastSquares::onInit ()
   PCLNodelet::onInit ();
   
   //ros::NodeHandle private_nh = getMTPrivateNodeHandle ();
-  pub_output_ = pnh_->advertise<PointCloudIn> ("output", max_queue_size_);
-  pub_normals_ = pnh_->advertise<NormalCloudOut> ("normals", max_queue_size_);
+  pub_output_ = pnh_->advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
+  pub_normals_ = pnh_->advertise<sensor_msgs::PointCloud2> ("normals", max_queue_size_);
   
   //if (!pnh_->getParam ("k_search", k_) && !pnh_->getParam ("search_radius", search_radius_))  
   if (!pnh_->getParam ("search_radius", search_radius_))
@@ -123,7 +124,9 @@ pcl_ros::MovingLeastSquares::input_indices_callback (const PointCloudInConstPtr 
   {
     NODELET_ERROR ("[%s::input_indices_callback] Invalid input!", getName ().c_str ());
     output.header = cloud->header;
-    pub_output_.publish (output.makeShared ());
+    sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(output, *output_msg);
+    pub_output_.publish2(output_msg);
     return;
   }
   // If indices are given, check if they are valid
@@ -131,7 +134,9 @@ pcl_ros::MovingLeastSquares::input_indices_callback (const PointCloudInConstPtr 
   {
     NODELET_ERROR ("[%s::input_indices_callback] Invalid indices!", getName ().c_str ());
     output.header = cloud->header;
-    pub_output_.publish (output.makeShared ());
+    sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(output, *output_msg);
+    pub_output_.publish2(output_msg);
     return;
   }
 
@@ -164,9 +169,13 @@ pcl_ros::MovingLeastSquares::input_indices_callback (const PointCloudInConstPtr 
   // Publish a Boost shared ptr const data
   // Enforce that the TF frame and the timestamp are copied
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
   normals->header = cloud->header;
-  pub_normals_.publish (normals);
+  sensor_msgs::PointCloud2Ptr output_normals_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(*normals, *output_normals_msg);
+  pub_normals_.publish2(output_normals_msg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

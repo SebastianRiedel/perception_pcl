@@ -43,7 +43,9 @@ pcl_ros::BoundaryEstimation::emptyPublish (const PointCloudInConstPtr &cloud)
 {
   PointCloudOut output;
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
 }
 
 void
@@ -67,7 +69,9 @@ pcl_ros::BoundaryEstimation::computePublish (const PointCloudInConstPtr &cloud,
 
   // Enforce that the TF frame and the timestamp are copied
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
 }
 
 typedef pcl_ros::BoundaryEstimation BoundaryEstimation;

@@ -93,8 +93,8 @@ namespace ros
       static const uint64_t static_value2 = MD5Sum<sensor_msgs::PointCloud2>::static_value2;
       
       // If the definition of sensor_msgs/PointCloud2 changes, we'll get a compile error here.
-      ROS_STATIC_ASSERT(static_value1 == 0x1158d486dd51d683ULL);
-      ROS_STATIC_ASSERT(static_value2 == 0xce2f1be655c3c181ULL);
+      ROS_STATIC_ASSERT(static_value1 == 0x12364ff51b6745b8ULL);
+      ROS_STATIC_ASSERT(static_value2 == 0xa58ad99d78aadfd6ULL);
     };
 
     template<typename T> struct DataType<pcl::PointCloud<T> >

@@ -40,6 +40,7 @@
 
 #include <pcl/features/normal_3d.h>
 #include "pcl_ros/features/feature.h"
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl_ros
 {
@@ -63,7 +64,7 @@ namespace pcl_ros
       childInit (ros::NodeHandle &nh)
       {
         // Create the output publisher
-        pub_output_ = nh.advertise<PointCloudOut> ("output", max_queue_size_);
+        pub_output_ = nh.advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
         return (true);
       }
 

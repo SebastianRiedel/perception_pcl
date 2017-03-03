@@ -37,13 +37,16 @@
 
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/features/boundary.h"
+#include <pcl_conversions/pcl_conversions.h>
 
 void 
 pcl_ros::BoundaryEstimation::emptyPublish (const PointCloudInConstPtr &cloud)
 {
   PointCloudOut output;
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2 output_msg;
+  pcl::toROSMsg(output, output_msg);
+  pub_output_.publish (output_msg);
 }
 
 void 
@@ -70,7 +73,9 @@ pcl_ros::BoundaryEstimation::computePublish (const PointCloudInConstPtr &cloud,
 
   // Enforce that the TF frame and the timestamp are copied
   output.header = cloud->header;
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2 output_msg;
+  pcl::toROSMsg(output, output_msg);
+  pub_output_.publish (output_msg);
 }
 
 typedef pcl_ros::BoundaryEstimation BoundaryEstimation;

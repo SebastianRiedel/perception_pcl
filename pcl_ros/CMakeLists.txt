@@ -6,6 +6,8 @@ find_package(cmake_modules REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 find_package(Eigen REQUIRED)
 find_package(PCL REQUIRED)
+list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
+
 
 ## Find catkin packages
 find_package(catkin REQUIRED COMPONENTS

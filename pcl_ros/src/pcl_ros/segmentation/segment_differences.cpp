@@ -38,6 +38,7 @@
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/segmentation/segment_differences.h"
 #include <pcl/io/io.h>
+#include <sensor_msgs/PointCloud2.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -46,7 +47,7 @@ pcl_ros::SegmentDifferences::onInit ()
   // Call the super onInit ()
   PCLNodelet::onInit ();
 
-  pub_output_ = pnh_->advertise<PointCloud> ("output", max_queue_size_);
+  pub_output_ = pnh_->advertise<sensor_msgs::PointCloud2> ("output", max_queue_size_);
 
   // Subscribe to the input using a filter
   sub_input_filter_.subscribe (*pnh_, "input", max_queue_size_);
@@ -101,7 +102,9 @@ pcl_ros::SegmentDifferences::input_target_callback (const PointCloudConstPtr &cl
     NODELET_ERROR ("[%s::input_indices_callback] Invalid input!", getName ().c_str ());
     PointCloud output;
     output.header = cloud->header;
-    pub_output_.publish (output.makeShared ());
+    sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(output, *output_msg);
+    pub_output_.publish2(output_msg);
     return;
   }
 
@@ -118,7 +121,9 @@ pcl_ros::SegmentDifferences::input_target_callback (const PointCloudConstPtr &cl
   PointCloud output;
   impl_.segment (output);
 
-  pub_output_.publish (output.makeShared ());
+  sensor_msgs::PointCloud2Ptr output_msg(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(output, *output_msg);
+  pub_output_.publish2(output_msg);
   NODELET_DEBUG ("[%s::segmentAndPublish] Published PointCloud2 with %zu points and stamp %f on topic %s", getName ().c_str (),
                      output.points.size (), fromPCL(output.header).stamp.toSec (), pnh_->resolveName ("output").c_str ());
 }
